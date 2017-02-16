@@ -6,9 +6,9 @@ Inspired by
 [`pacdiff`](https://wiki.archlinux.org/index.php/Pacman/Pacnew_and_Pacsave#Managing_.pacnew_files)
 from Arch Linux.
 
-Recursive conflicts of the form
-`.sync-conflict-XXXXXXXX-XXXXXX.sync-conflict-YYYYYYYY-YYYYYY` are not
-handled properly yet and will be ignored.
+Be careful with recursive conflicts of the form
+`.sync-conflict-XXXXXXXX-XXXXXX.sync-conflict-YYYYYYYY-YYYYYY` as they
+are not handled in any special way at the moment.
 
 Files in `/.stversions/` folders will be ignored and consent is asked
 for removal.
