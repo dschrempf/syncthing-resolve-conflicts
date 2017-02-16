@@ -6,6 +6,16 @@ Inspired by
 [`pacdiff`](https://wiki.archlinux.org/index.php/Pacman/Pacnew_and_Pacsave#Managing_.pacnew_files)
 from Arch Linux.
 
+Recursive conflicts of the form
+`.sync-conflict-XXXXXXXX-XXXXXX.sync-conflict-YYYYYYYY-YYYYYY` are not
+handled properly yet and will be ignored.
+
+Files in `/.stversions/` folders will be ignored and consent is asked
+for removal.
+
+Non-text files are ignored at the moment and can be removed one by one
+if desired.
+
     syncthing-resolve-conflicts.sh v1.0.0
 
     Inspired by 'pacdiff'.
