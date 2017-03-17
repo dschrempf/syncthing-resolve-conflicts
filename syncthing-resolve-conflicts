@@ -3,7 +3,7 @@
 # Check for sync conflicts and resolve them.  Idea from the shell
 # script 'pacdiff'.
 
-declare -r myname='syncthing-resolve-conflicts.sh'
+declare -r myname='syncthing-resolve-conflicts'
 declare -r myver='1.0.0'
 
 diffprog=${DIFFPROG:-'vim -d'}
