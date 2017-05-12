@@ -54,7 +54,7 @@ warning() {
     local mesg
     mesg="$1"; shift
     # shellcheck disable=SC2059
-    printf "\n${YELLOW}==> $(translate "WARNING:")${ALL_OFF} ${mesg}${ALL_OFF}\n" "$@" >&2
+    printf "${YELLOW}==> $(translate "WARNING:")${ALL_OFF} ${mesg}${ALL_OFF}\n" "$@" >&2
 }
 
 error() {
@@ -247,7 +247,7 @@ fi
 # delete them one by one if specified.
 if [ ! ${#nontext[@]} -eq 0 ]
 then
-    warning "The following files that are non-text:"
+    warning "The following conflicts involve non-text files:"
     for f in "${nontext[@]}"
     do
         msg "Non-text file: %s" "$f"
