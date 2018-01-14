@@ -174,7 +174,7 @@ while IFS= read -u 3 -r -d '' conflict; do
     # TODO: Improve pattern match (digits only).
 
     # Original filename.
-    file="${conflict/.sync-conflict-????????-??????/}"
+    file="${conflict/.sync-conflict-????????-??????-???????/}"
     msg "Sync conflict: %s" "$conflict"
     # Handle sync conflict if original file exists.
     if [ ! -f "$file" ]
