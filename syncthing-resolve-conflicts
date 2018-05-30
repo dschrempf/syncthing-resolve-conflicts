@@ -98,8 +98,10 @@ version() {
 
 cmd() {
     case "$(uname -s)" in
-        Darwin) locate -0 sync-conflict;;
-        *) locate -0 -e -b sync-conflict ;;
+        Darwin)
+            locate -0 sync-conflict;;
+        *)
+            locate -0 -e -b sync-conflict;;
     esac
 }
 
@@ -144,19 +146,19 @@ if [ -z "$(command -v "${diffprog%% *}")" ] && (( ! OUTPUTONLY )); then
     exit 1
 fi
 
-warning "Recursive sync conflicts are not properly handled."
+# warning "Recursive sync conflicts are not properly handled."
 
 # See http://mywiki.wooledge.org/BashFAQ/020.
 while IFS= read -u 3 -r -d '' conflict; do
     [[ ! -e "$conflict" && ! -L "$conflict" && ! -d "$conflict" ]] && continue
+
     if (( OUTPUTONLY )); then
         echo "$conflict"
         continue
     fi
 
     # Ignore backups in '.stversions' folders.
-    if [[ "$conflict" = */.stversions/* ]]
-    then
+    if [[ "$conflict" = */.stversions/* ]]; then
         ignored+=("$conflict")
         continue
     fi
@@ -164,35 +166,35 @@ while IFS= read -u 3 -r -d '' conflict; do
     # XXX: Maybe somebody wants to diff special non-text files?
 
     # Ignore binary files.
-    if file -i "$conflict" | grep -qv text
-    then
+    if file -i "$conflict" | grep -qv text; then
         nontext+=("$conflict")
         continue
     fi
 
     # XXX: Recursive sync conflicts lead to problems if they are treated in the
-    # wrong order.
-
-    # TODO: Improve pattern match (digits only).
-
-    # Original filename.
-    file="${conflict/.sync-conflict-????????-??????-???????/}"
-    msg "Sync conflict: %s" "$conflict"
-    # Handle sync conflict if original file exists.
-    if [ ! -f "$file" ]
-    then
-        warning "Original file does not exist for conflict %s." "$conflict"
-        ignored+=("$conflict")
+    # wrong order. For now, collect sync conflicts of higher order and treat
+    # them later.
+    if [[ "$conflict" = *sync-conflict*sync-conflict* ]]; then
+        recursive+=("$conflict")
         continue
     fi
-    msg2 "Original file: %s" "$file"
 
-    if test "$conflict" -ef "$file"; then
+    # Original filename. TODO: Improve pattern match (digits only).
+    file="${conflict/.sync-conflict-????????-??????-???????/}"
+    # Handle sync conflict.
+    msg "Sync  conflict: %s" "$conflict"
+    msg2 "Original file: %s" "$file"
+    if [ ! -f "$file" ]; then
+        warning "Original file not found for conflict %s." "$conflict"
+        ignored+=("$conflict")
+        continue
+    elif test "$conflict" -ef "$file"; then
         warning "Original file and conflict file point to the same file. Ignoring conflict."
         continue
     elif cmp -s "$conflict" "$file"; then
         msg2 "Files are identical, removing..."
         plain "$(rm -v "$conflict")"
+        continue
     else
         ask "(V)iew, (S)kip, (R)emove sync conflict, (O)verwrite with sync conflict, (Q)uit: [v/s/r/o/q] "
         # shellcheck disable=SC2162
@@ -239,6 +241,39 @@ then
                 done
                 ;;
             r|R) (( ${#ignored[@]} )) && plain "$(rm -v "${ignored[@]}")"; break ;;
+            *) ask "Invalid answer.  Try again: [d/q] "; continue ;;
+        esac
+    done
+fi
+
+# Print warning if recursive conflicts of depth two or larger have been ignored
+# and delete them if specified.
+if [ ! ${#recursive[@]} -eq 0 ]
+then
+    warning "Some recursive conflicts have been ignored."
+    (( ${#recursive[@]} )) && msg "%s" "${recursive[@]}"
+    ask "(R)emove all ignored files, (A)sk for each file, (Q)uit: [r/q] "
+    # shellcheck disable=SC2162
+    while read c; do
+        case "$c" in
+            q|Q) exit 0 ;;
+            a|A)
+                for f in "${recursive[@]}"
+                do
+                    msg "Ignored file: %s" "$f"
+                    ask "(R)emove, (S)kip, (Q)uit: [r/s/q] "
+                    # shellcheck disable=SC2162
+                    while read ci; do
+                        case "$ci" in
+                            q|Q) exit 0 ;;
+                            s|S) break ;;
+                            r|R) plain "$(rm -v "$f")"; break ;;
+                            *) ask "Invalid answer.  Try again: [r/s/q] "; continue ;;
+                        esac
+                    done
+                done
+                ;;
+            r|R) (( ${#recursive[@]} )) && plain "$(rm -v "${recursive[@]}")"; break ;;
             *) ask "Invalid answer.  Try again: [d/q] "; continue ;;
         esac
     done
