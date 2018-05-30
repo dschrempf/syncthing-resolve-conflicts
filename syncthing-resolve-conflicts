@@ -15,7 +15,8 @@ plain() {
     (( QUIET )) && return
     local mesg
     mesg="$1"; shift
-    printf "    ${mesg}${ALL_OFF}\n" "$@" >&1
+    # shellcheck disable=SC2059
+    printf "    ${mesg}${ALL_OFF}\\n" "$@" >&1
 }
 
 msg() {
@@ -23,7 +24,7 @@ msg() {
     local mesg
     mesg="$1"; shift
     # shellcheck disable=SC2059
-    printf "${GREEN}==>${ALL_OFF} ${mesg}${ALL_OFF}\n" "$@" >&1
+    printf "${GREEN}==>${ALL_OFF} ${mesg}${ALL_OFF}\\n" "$@" >&1
 }
 
 msg2() {
@@ -31,7 +32,7 @@ msg2() {
     local mesg
     mesg="$1"; shift
     # shellcheck disable=SC2059
-    printf "${BLUE} ->${ALL_OFF} ${mesg}${ALL_OFF}\n" "$@" >&1
+    printf "${BLUE} ->${ALL_OFF} ${mesg}${ALL_OFF}\\n" "$@" >&1
 }
 
 ask() {
@@ -54,14 +55,14 @@ warning() {
     local mesg
     mesg="$1"; shift
     # shellcheck disable=SC2059
-    printf "${YELLOW}==> $(translate "WARNING:")${ALL_OFF} ${mesg}${ALL_OFF}\n" "$@" >&2
+    printf "${YELLOW}==> $(translate "WARNING:")${ALL_OFF} ${mesg}${ALL_OFF}\\n" "$@" >&2
 }
 
 error() {
     local mesg
     mesg="$1"; shift
     # shellcheck disable=SC2059
-    printf "${RED}==> $(translate "ERROR:")${ALL_OFF} ${mesg}${ALL_OFF}\n" "$@" >&2
+    printf "${RED}==> $(translate "ERROR:")${ALL_OFF} ${mesg}${ALL_OFF}\\n" "$@" >&2
 }
 
 usage() {
@@ -128,11 +129,11 @@ if [[ -t 2 && $USE_COLOR = "y" ]]; then
         RED="$(tput setaf 1)"
         YELLOW="$(tput setaf 3)"
     else
-        ALL_OFF="\e[1;0m"
-        BLUE="\e[1;34m"
-        GREEN="\e[1;32m"
-        RED="\e[1;31m"
-        YELLOW="\e[1;33m"
+        ALL_OFF="\\e[1;0m"
+        BLUE="\\e[1;34m"
+        GREEN="\\e[1;32m"
+        RED="\\e[1;31m"
+        YELLOW="\\e[1;33m"
     fi
 fi
 readonly ALL_OFF BOLD BLUE GREEN RED YELLOW
