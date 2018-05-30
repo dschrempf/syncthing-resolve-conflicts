@@ -69,16 +69,17 @@ usage() {
     cat <<EOF
 ${myname} v${myver}
 
-Inspired by 'pacdiff'.
-A simple program to merge or remove sync conflicts.
-Locate is used to find conflicts.
-In case the database is not recent, run 'updatedb'.
+Inspired by 'pacdiff'. A simple program to merge or remove sync conflicts.
+Locate is used to find conflicts. In case the database is not recent, run
+'updatedb'.
 
 Usage: $myname [-o] [--nocolor]
 
 General Options:
   -o/--output       print files instead of merging them
   --nocolor         remove colors from output
+  -v/--version      print version and exit
+  -h/--help         print usage and exit
 
 Environment Variables:
   DIFFPROG          override the merge program: (default: 'vim -d')
@@ -90,8 +91,8 @@ EOF
 }
 
 version() {
-    printf "%s %s\n" "$myname" "$myver"
-    echo 'Copyright (C) 2017 Dominik Schrempf <dominik.schrempf@gmail.com>'
+    printf "%s %s\\n" "$myname" "$myver"
+    echo 'Copyright (C) 2018 Dominik Schrempf <dominik.schrempf@gmail.com>'
     echo 'Inspired by "pacdiff".'
 }
 
@@ -169,8 +170,8 @@ while IFS= read -u 3 -r -d '' conflict; do
         continue
     fi
 
-    # XXX: Recursive sync conflicts lead to problems if they are
-    # treated in the wrong order.
+    # XXX: Recursive sync conflicts lead to problems if they are treated in the
+    # wrong order.
 
     # TODO: Improve pattern match (digits only).
 
