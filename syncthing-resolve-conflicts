@@ -212,8 +212,7 @@ while IFS= read -u 3 -r -d '' conflict; do
     fi
 done 3< <(cmd)
 
-# Print warning if files have been ignored and delete them if
-# specified.
+# Print warning if files have been ignored and delete them if specified.
 if [ ! ${#ignored[@]} -eq 0 ]
 then
     warning "Some files have been ignored."
@@ -245,8 +244,8 @@ then
     done
 fi
 
-# Print warning if non-text sync conflicts have been detected and
-# delete them one by one if specified.
+# Print warning if non-text sync conflicts have been detected and delete them
+# one by one if specified.
 if [ ! ${#nontext[@]} -eq 0 ]
 then
     warning "The following conflicts involve non-text files:"
