@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Check for sync conflicts and resolve them.  Idea from the shell
-# script 'pacdiff'.
+# Check for sync conflicts and resolve them. Idea from the shell script
+# 'pacdiff'.
 
 declare -r myname='syncthing-resolve-conflicts'
-declare -r myver='1.0.0'
+declare -r myver='1.0.1'
 
 diffprog=${DIFFPROG:-'vim -d'}
 USE_COLOR='y'
