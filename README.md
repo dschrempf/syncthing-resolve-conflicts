@@ -16,21 +16,25 @@ for removal.
 Non-text files are ignored at the moment and can be removed one by one
 if desired.
 
-    syncthing-resolve-conflicts v1.0.0
+    syncthing-resolve-conflicts v1.0.2
 
-    Inspired by 'pacdiff'.
-    A simple program to merge or remove sync conflicts.
-    Locate is used to find conflicts.
-    In case the database is not recent, run 'updatedb'.
-
-    Usage: syncthing-resolve-conflicts [-o] [--nocolor]
-
+    Inspired by 'pacdiff'. A simple program to merge or remove sync conflicts.
+    Locate is used to find conflicts. In case the database is not recent, run
+    'updatedb'.
+    
+    Usage: syncthing-resolve-conflicts [-o] [-f] [--nocolor]
+    
     General Options:
       -o/--output       print files instead of merging them
+      -f/--find         use find instead of locate; scans only the home directory
+                        of the current user
       --nocolor         remove colors from output
-
+      -v/--version      print version and exit
+      -h/--help         print usage and exit
+    
     Environment Variables:
       DIFFPROG          override the merge program: (default: 'vim -d')
-
+    
     Example: DIFFPROG=meld syncthing-resolve-conflicts
     Example: syncthing-resolve-conflicts --output
+
