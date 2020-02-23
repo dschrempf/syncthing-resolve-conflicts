@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Check for sync conflicts and resolve them. Idea from the shell script
-# 'pacdiff'.
+# Check for sync conflicts and resolve them. Inspired by 'pacdiff' from Arch
+# Linux.
 
 declare -r myname='syncthing-resolve-conflicts'
 declare -r myver='1.0.2'
