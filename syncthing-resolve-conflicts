@@ -95,7 +95,7 @@ EOF
 
 version() {
     printf "%s %s\\n" "$myname" "$myver"
-    echo 'Copyright (C) 2018 Dominik Schrempf <dominik.schrempf@gmail.com>'
+    echo 'Copyright (C) 2020 Dominik Schrempf <dominik.schrempf@gmail.com>'
     echo 'Inspired by "pacdiff".'
 }
 
