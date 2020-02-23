@@ -131,7 +131,7 @@ while [[ -n "$1" ]]; do
 done
 
 # Check if messages are to be printed using color.
-unset ALL_OFF BOLD BLUE GREEN RED YELLOW
+unset ALL_OFF BLUE GREEN RED YELLOW
 if [[ -t 2 && $USE_COLOR = "y" ]]; then
     # Prefer terminal safe colored and bold text when tput is supported.
     if tput setaf 0 &>/dev/null; then
@@ -148,7 +148,7 @@ if [[ -t 2 && $USE_COLOR = "y" ]]; then
         YELLOW="\\e[1;33m"
     fi
 fi
-readonly ALL_OFF BOLD BLUE GREEN RED YELLOW
+readonly ALL_OFF BLUE GREEN RED YELLOW
 
 if [ -z "$(command -v "${diffprog%% *}")" ] && (( ! OUTPUTONLY )); then
     error "Cannot find the $diffprog binary required for viewing differences."
