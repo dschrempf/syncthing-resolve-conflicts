@@ -114,16 +114,16 @@ cmd() {
 
 while [[ -n "$1" ]]; do
     case "$1" in
-        -o|--output)
-            OUTPUTONLY=1;;
-        -f|--find)
-            USE_FIND=1;;
-        --nocolor)
-            USE_COLOR='n';;
-        -v|-V|--version)
-            version; exit 0;;
         -h|--help)
             usage; exit 0;;
+        -v|-V|--version)
+            version; exit 0;;
+        -f|--find)
+            USE_FIND=1;;
+        -o|--output)
+            OUTPUTONLY=1;;
+        --nocolor)
+            USE_COLOR='n';;
         *)
             usage; exit 1;;
     esac
