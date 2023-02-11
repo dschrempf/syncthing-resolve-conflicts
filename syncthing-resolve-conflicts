@@ -110,7 +110,7 @@ cmd() {
             find ~/ -name '*sync-conflict*' -print0
         else
             # echo "find $DIRECTORY -name '*sync-conflict*' -print0" >&2
-            find $DIRECTORY -name '*sync-conflict*' -print0
+            find "$DIRECTORY" -name '*sync-conflict*' -print0
         fi
     else
         case "$(uname -s)" in
