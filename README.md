@@ -14,27 +14,29 @@ instead, consent is asked for removal:
 - files in `/.stversions/` folders;
 - non-text files.
 
-    (C) + syncthing-resolve-conflicts -h
-    syncthing-resolve-conflicts v1.2.0
+```console
+(C) + syncthing-resolve-conflicts -h
+syncthing-resolve-conflicts v1.2.0
 
-    Inspired by 'pacdiff'. A simple program to merge or remove sync conflicts.
-    'locate' (or 'find', see -f option) is used to find conflicts. In case the
-    database is not recent, run 'updatedb'.
+Inspired by 'pacdiff'. A simple program to merge or remove sync conflicts.
+'locate' (or 'find', see -f option) is used to find conflicts. In case the
+database is not recent, run 'updatedb'.
 
-    Usage: syncthing-resolve-conflicts [-d DIR] [-f] [-o] [--nocolor]
+Usage: syncthing-resolve-conflicts [-d DIR] [-f] [-o] [--nocolor]
 
-    General Options:
-      -d/--directory DIR  only scan for sync conflicts in the directory DIR
-      -f/--find           use find instead of locate; by default, scan the home
-                          directory of the current user, but please see the -d
-                          option
-      -o/--output         print files instead of merging them
-      --nocolor           remove colors from output
-      -v/--version        print version and exit
-      -h/--help           print usage and exit
+General Options:
+  -d/--directory DIR  only scan for sync conflicts in the directory DIR
+  -f/--find           use find instead of locate; by default, scan the home
+                      directory of the current user, but please see the -d
+                      option
+  -o/--output         print files instead of merging them
+  --nocolor           remove colors from output
+  -v/--version        print version and exit
+  -h/--help           print usage and exit
 
-    Environment Variables:
-      DIFFPROG          override the merge program: (default: 'vim -d')
+Environment Variables:
+  DIFFPROG          override the merge program: (default: 'vim -d')
 
-    Example: DIFFPROG=meld syncthing-resolve-conflicts
-    Example: syncthing-resolve-conflicts --output
+Example: DIFFPROG=meld syncthing-resolve-conflicts
+Example: syncthing-resolve-conflicts --output
+```
