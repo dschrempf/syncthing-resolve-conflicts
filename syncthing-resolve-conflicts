@@ -4,7 +4,7 @@
 # Linux.
 
 declare -r myname='syncthing-resolve-conflicts'
-declare -r myver='1.1.0'
+declare -r myver='1.2.0'
 
 diffprog=${DIFFPROG:-'vim -d'}
 USE_COLOR='y'
