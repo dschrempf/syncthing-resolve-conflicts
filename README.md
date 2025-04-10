@@ -1,22 +1,21 @@
-# Resolve sync conflicts
+# Resolve Syncthing synchronization conflicts
 
-A small bash script that handles synchronization conflicts that
-necessarily pop up when using [Syncthing](https://syncthing.net/).
-Inspired by
+A small Bash script that handles synchronization conflicts that necessarily pop
+up when using [Syncthing](https://syncthing.net/). Inspired by
 [`pacdiff`](https://wiki.archlinux.org/index.php/Pacman/Pacnew_and_Pacsave#Managing_.pacnew_files)
 from Arch Linux.
 
 Be careful with recursive conflicts of the form
-`.sync-conflict-XXXXXXXX-XXXXXX.sync-conflict-YYYYYYYY-YYYYYY` as they
-are not handled in any special way at the moment.
+`.sync-conflict-XXXXXXXX-XXXXXX.sync-conflict-YYYYYYYY-YYYYYY` as they are not
+treated in any special way at the moment.
 
-Files in `/.stversions/` folders will be ignored and consent is asked
-for removal.
+In the following cases, conflicts will be ignored (i.e., not resolved), and
+instead, consent is asked for removal:
+- files in `/.stversions/` folders;
+- non-text files.
 
-Non-text files are ignored at the moment and can be removed one by one
-if desired.
-
-    syncthing-resolve-conflicts v1.1.0
+    (C) + syncthing-resolve-conflicts -h
+    syncthing-resolve-conflicts v1.2.0
 
     Inspired by 'pacdiff'. A simple program to merge or remove sync conflicts.
     'locate' (or 'find', see -f option) is used to find conflicts. In case the
