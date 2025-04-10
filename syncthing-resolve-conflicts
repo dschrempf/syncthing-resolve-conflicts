@@ -77,9 +77,10 @@ usage() {
     cat <<EOF
 ${myname} v${myver}
 
-Inspired by 'pacdiff'. A simple program to merge or remove sync conflicts.
-'locate' (or 'find', see -f option) is used to find conflicts. In case the
-database is not recent, run 'updatedb'.
+Inspired by 'pacdiff'. A simple program to merge or remove synchronization
+conflicts. 'locate' (or 'find', see -f option) is used to find conflicts. If you
+are using 'locate', make sure that your database is up-to-date by running
+'updatedb'.
 
 Usage: $myname [-d DIR] [-f] [-o] [--nocolor]
 
@@ -111,10 +112,8 @@ version() {
 cmd() {
     if ((USE_FIND)); then
         if [[ -z $DIRECTORY ]]; then
-            # echo "find ~/ -name '*sync-conflict*' -print0"
             find ~/ -name '*sync-conflict*' -print0
         else
-            # echo "find $DIRECTORY -name '*sync-conflict*' -print0" >&2
             find "$DIRECTORY" -name '*sync-conflict*' -print0
         fi
     else
@@ -133,7 +132,6 @@ cmd() {
             locate_opt=(-r)
             glob="^${DIRECTORY}.*sync-conflict.*"
         fi
-        # echo "${locate_cmd[@]}" "${locate_opt[@]}" "$glob" >&2
         "${locate_cmd[@]}" "${locate_opt[@]}" "$glob"
     fi
 }
@@ -180,7 +178,7 @@ done
 # Check if messages are to be printed using color.
 unset ALL_OFF BLUE GREEN RED YELLOW
 if [[ -t 2 && $USE_COLOR = "y" ]]; then
-    # Prefer terminal safe colored and bold text when tput is supported.
+    # Prefer terminal safe colored and bold text when 'tput' is supported.
     if tput setaf 0 &>/dev/null; then
         ALL_OFF="$(tput sgr0)"
         BLUE="$(tput setaf 27)"
@@ -197,12 +195,22 @@ if [[ -t 2 && $USE_COLOR = "y" ]]; then
 fi
 readonly ALL_OFF BLUE GREEN RED YELLOW
 
-if [ -z "$(command -v "${diffprog%% *}")" ] && ((!OUTPUTONLY)); then
-    error "Cannot find the $diffprog binary required for viewing differences."
-    exit 1
+# Check for 'locate'.
+if ! ((USE_FIND)); then
+    if [ -z "$(command -v locate)" ]; then
+        error "Cannot find the 'locate' binary required for finding conflicts."
+        msg "You may want to use find."
+        echo
+        usage
+        exit 1
+    fi
 fi
 
-# warning "Recursive sync conflicts are not properly handled."
+# Check for '$diffprog'.
+if [ -z "$(command -v "${diffprog%% *}")" ] && ((!OUTPUTONLY)); then
+    error "Cannot find the '$diffprog' binary required for viewing differences."
+    exit 1
+fi
 
 # See http://mywiki.wooledge.org/BashFAQ/020.
 while IFS= read -u 3 -r -d '' conflict; do
