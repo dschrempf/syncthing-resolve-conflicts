@@ -8,7 +8,7 @@ declare -r myver='1.2.0'
 
 diffprog=${DIFFPROG:-'vim -d'}
 USE_COLOR='y'
-declare -i USE_FIND=0
+declare findprog="locate"
 declare DIRECTORY=""
 declare -a ignored
 declare -a nontext
@@ -78,15 +78,18 @@ usage() {
 ${myname} v${myver}
 
 Inspired by 'pacdiff'. A simple program to merge or remove synchronization
-conflicts. 'locate' (or 'find', see -f option) is used to find conflicts. If you
-are using 'locate', make sure that your database is up-to-date by running
-'updatedb'.
+conflicts. 'locate' (or 'find' or 'fd', see -f and -F options) is used to
+find conflicts. If you are using 'locate', make sure that your database is
+up-to-date by running 'updatedb'.
 
-Usage: $myname [-d DIR] [-f] [-o] [--nocolor]
+Usage: $myname [-d DIR] [-f] [-F] [-o] [--nocolor]
 
 General Options:
   -d/--directory DIR  only scan for sync conflicts in the directory DIR
   -f/--find           use find instead of locate; by default, scan the home
+                      directory of the current user, but please see the -d
+                      option
+  -F/--fd             use fd instead of locate; by default, scan the home
                       directory of the current user, but please see the -d
                       option
   -o/--output         print files instead of merging them
@@ -110,11 +113,17 @@ version() {
 }
 
 cmd() {
-    if ((USE_FIND)); then
+    if [[ $findprog = find ]]; then
         if [[ -z $DIRECTORY ]]; then
             find ~/ -name '*sync-conflict*' -print0
         else
             find "$DIRECTORY" -name '*sync-conflict*' -print0
+        fi
+    elif [[ $findprog = fd ]]; then
+        if [[ -z $DIRECTORY ]]; then
+            fd --print0 --color=never '.*sync-conflict.*' ~/
+        else
+            fd --print0 --color=never '.*sync-conflict.*' "$DIRECTORY"
         fi
     else
         case "$(uname -s)" in
@@ -159,7 +168,10 @@ while [[ -n "$1" ]]; do
         shift
         ;;
     -f | --find)
-        USE_FIND=1
+        findprog="find"
+        ;;
+    -F | --fd)
+        findprog="fd"
         ;;
     -o | --output)
         OUTPUTONLY=1
@@ -195,11 +207,19 @@ if [[ -t 2 && $USE_COLOR = "y" ]]; then
 fi
 readonly ALL_OFF BLUE GREEN RED YELLOW
 
-# Check for 'locate'.
-if ! ((USE_FIND)); then
+# Check for 'locate' or 'fd'. 'find' should always be there.
+if [[ $findprog = locate ]]; then
     if [ -z "$(command -v locate)" ]; then
         error "Cannot find the 'locate' binary required for finding conflicts."
-        msg "You may want to use find."
+        msg "You may want to use find or fd."
+        echo
+        usage
+        exit 1
+    fi
+elif [[ $findprog = fd ]]; then
+    if [ -z "$(command -v fd)" ]; then
+        error "Cannot find the 'fd' binary required for finding conflicts."
+        msg "You may want to use locate or find."
         echo
         usage
         exit 1
