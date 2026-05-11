@@ -81,13 +81,13 @@ conflicts. 'locate' (or 'find' or 'fd', see -f and -F options) is used to
 find conflicts. If you are using 'locate', make sure that your database is
 up-to-date by running 'updatedb'.
 
-Usage: $myname [-c] [-d DIR] [-f] [-F] [-o] [--nocolor]
+Usage: $myname [-d DIR] [-c] [-f] [-F] [-o] [--nocolor]
 
 General Options:
+  -d/--directory DIR  only scan for sync conflicts in the directory DIR
   -c/--config         scan all folders from the syncthing configuration;
                       config location is taken from \$STCONFDIR or \$STHOMEDIR,
                       then 'syncthing paths', then the platform default
-  -d/--directory DIR  only scan for sync conflicts in the directory DIR
   -f/--find           use find instead of locate; by default, scan the home
                       directory of the current user, but please see the -d
                       option
