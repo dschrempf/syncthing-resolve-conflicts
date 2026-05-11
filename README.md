@@ -19,8 +19,8 @@ instead, consent is asked for removal:
 syncthing-resolve-conflicts v1.2.0
 
 Inspired by 'pacdiff'. A simple program to merge or remove synchronization
-conflicts. 'locate' (or 'find' or 'fd', see -f and -F options) is used to
-find conflicts. If you are using 'locate', make sure that your database is
+conflicts. 'locate' is used by default to find conflicts; use -f for 'find'
+or -F for 'fd'. If you are using 'locate', make sure your database is
 up-to-date by running 'updatedb'.
 
 Usage: syncthing-resolve-conflicts [-d DIR] [-c] [-f] [-F] [-o] [--nocolor]
