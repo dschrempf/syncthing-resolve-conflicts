@@ -16,7 +16,7 @@ instead, consent is asked for removal:
 
 ```console
 (C) + syncthing-resolve-conflicts -h
-syncthing-resolve-conflicts v1.2.0
+syncthing-resolve-conflicts v1.3.0
 
 Inspired by 'pacdiff'. A simple program to merge or remove synchronization
 conflicts. 'locate' is used by default to find conflicts; use -f for 'find'
@@ -29,7 +29,8 @@ General Options:
   -d/--directory DIR  only scan for sync conflicts in the directory DIR
   -c/--config         scan all folders from the syncthing configuration;
                       config location is taken from $STCONFDIR or $STHOMEDIR,
-                      then 'syncthing paths', then the platform default
+                      then 'syncthing paths', then the platform default;
+                      may be combined with -f or -F
   -f/--find           use find instead of locate; by default, scan the home
                       directory of the current user, but please see the -d
                       option

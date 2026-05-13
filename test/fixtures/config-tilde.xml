@@ -1,0 +1,4 @@
+<configuration version="37">
+    <folder id="docs" label="Documents" path="~/Documents" type="sendreceive">
+    </folder>
+</configuration>
