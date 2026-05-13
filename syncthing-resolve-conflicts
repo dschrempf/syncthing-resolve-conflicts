@@ -10,7 +10,7 @@ diffprog=${DIFFPROG:-'vim -d'}
 USE_COLOR='y'
 declare findprog="locate"
 declare DIRECTORY=""
-declare USE_SYNCTHING_CONFIG=""
+declare -i USE_SYNCTHING_CONFIG=0
 
 plain() {
     ((QUIET)) && return
@@ -172,7 +172,8 @@ find_syncthing_config() {
 
     case "$(uname -s)" in
         Darwin) config_search_paths+=("$HOME/Library/Application Support/Syncthing/config.xml") ;;
-        *)      config_search_paths+=("$HOME/.config/syncthing/config.xml") ;;
+        *)      config_search_paths+=("$HOME/.local/state/syncthing/config.xml")
+                config_search_paths+=("$HOME/.config/syncthing/config.xml") ;;
     esac
 
     local config
@@ -184,7 +185,9 @@ find_syncthing_config() {
 }
 
 get_syncthing_folders() {
-    grep -oP 'path="\K[^"]+' "$1" | grep -v '^$'
+    sed -n 's/.*path="\([^"]*\)".*/\1/p' "$1" | while IFS= read -r folder; do
+        echo "${folder/#\~/$HOME}"
+    done
 }
 
 process_conflicts() {
@@ -417,7 +420,7 @@ while [[ -n "$1" ]]; do
     shift
 done
 
-if [[ -n $USE_SYNCTHING_CONFIG && -n $DIRECTORY ]]; then
+if (( USE_SYNCTHING_CONFIG )) && [[ -n $DIRECTORY ]]; then
     error "Options -c and -d are mutually exclusive."
     exit 1
 fi
@@ -473,9 +476,17 @@ if (( USE_SYNCTHING_CONFIG )); then
         msg "Set \$STCONFDIR or \$STHOMEDIR to point to your syncthing configuration directory."
         exit 1
     }
+    folders=()
     while IFS= read -r folder; do
-        process_conflicts "$folder"
+        folders+=("$folder")
     done < <(get_syncthing_folders "$config_file")
+    if (( ${#folders[@]} == 0 )); then
+        error "No folders found in syncthing configuration."
+        exit 1
+    fi
+    for folder in "${folders[@]}"; do
+        process_conflicts "$folder"
+    done
 else
     process_conflicts "$DIRECTORY"
 fi
