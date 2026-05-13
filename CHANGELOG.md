@@ -8,6 +8,8 @@
 - Fix several robustness issues: explicit directory passing to `cmd()`,
   `realpath` normalization of config folders, narrowed XML parsing in
   `get_syncthing_folders`, color init ordering.
+- Add bats test suite covering CLI flags, config parsing, and conflict
+  processing.
 
 ## [1.2.0] - 2025-04-10
 

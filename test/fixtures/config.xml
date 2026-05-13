@@ -1,0 +1,10 @@
+<configuration version="37">
+    <folder id="docs" label="Documents" path="/test/path/Documents" type="sendreceive">
+    </folder>
+    <folder id="pics" label="Pictures" path="/test/path/Pictures" type="sendreceive">
+    </folder>
+    <defaults>
+        <folder id="" path="~">
+        </folder>
+    </defaults>
+</configuration>

@@ -389,118 +389,122 @@ process_conflicts() {
     fi
 }
 
-while [[ -n "$1" ]]; do
-    case "$1" in
-    -h | --help)
-        usage
-        exit 0
-        ;;
-    -v | -V | --version)
-        version
-        exit 0
-        ;;
-    -c | --config)
-        USE_SYNCTHING_CONFIG=1
-        ;;
-    -d | --directory)
-        DIRECTORY=$(check_dir "$2")
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+
+    while [[ -n "$1" ]]; do
+        case "$1" in
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -v | -V | --version)
+            version
+            exit 0
+            ;;
+        -c | --config)
+            USE_SYNCTHING_CONFIG=1
+            ;;
+        -d | --directory)
+            DIRECTORY=$(check_dir "$2")
+            shift
+            ;;
+        -f | --find)
+            findprog="find"
+            ;;
+        -F | --fd)
+            findprog="fd"
+            ;;
+        -o | --output)
+            OUTPUTONLY=1
+            ;;
+        --nocolor)
+            USE_COLOR='n'
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+        esac
         shift
-        ;;
-    -f | --find)
-        findprog="find"
-        ;;
-    -F | --fd)
-        findprog="fd"
-        ;;
-    -o | --output)
-        OUTPUTONLY=1
-        ;;
-    --nocolor)
-        USE_COLOR='n'
-        ;;
-    *)
-        usage
-        exit 1
-        ;;
-    esac
-    shift
-done
-
-# Check if messages are to be printed using color.
-unset ALL_OFF BLUE GREEN RED YELLOW
-if [[ -t 2 && $USE_COLOR = "y" ]]; then
-    # Prefer terminal safe colored and bold text when 'tput' is supported.
-    if tput setaf 0 &>/dev/null; then
-        ALL_OFF="$(tput sgr0)"
-        BLUE="$(tput setaf 27)"
-        GREEN="$(tput setaf 2)"
-        RED="$(tput setaf 1)"
-        YELLOW="$(tput setaf 3)"
-    else
-        ALL_OFF="\\e[1;0m"
-        BLUE="\\e[1;34m"
-        GREEN="\\e[1;32m"
-        RED="\\e[1;31m"
-        YELLOW="\\e[1;33m"
-    fi
-fi
-readonly ALL_OFF BLUE GREEN RED YELLOW
-
-if ((USE_SYNCTHING_CONFIG)) && [[ -n $DIRECTORY ]]; then
-    error "Options -c and -d are mutually exclusive."
-    exit 1
-fi
-
-# Check for 'locate' or 'fd'. 'find' should always be there.
-if [[ $findprog = locate ]]; then
-    if [ -z "$(command -v locate)" ]; then
-        error "Cannot find the 'locate' binary required for finding conflicts."
-        msg "You may want to use find or fd."
-        echo
-        usage
-        exit 1
-    fi
-elif [[ $findprog = fd ]]; then
-    if [ -z "$(command -v fd)" ]; then
-        error "Cannot find the 'fd' binary required for finding conflicts."
-        msg "You may want to use locate or find."
-        echo
-        usage
-        exit 1
-    fi
-fi
-
-# Check for '$diffprog'.
-if [ -z "$(command -v "${diffprog%% *}")" ] && ((!OUTPUTONLY)); then
-    error "Cannot find the '$diffprog' binary required for viewing differences."
-    exit 1
-fi
-
-if ((USE_SYNCTHING_CONFIG)); then
-    config_file=$(find_syncthing_config) || {
-        error "Could not find a valid syncthing configuration file."
-        msg "Set \$STCONFDIR or \$STHOMEDIR to point to your syncthing configuration directory."
-        exit 1
-    }
-    folders=()
-    while IFS= read -r folder; do
-        folders+=("$folder")
-    done < <(get_syncthing_folders "$config_file")
-    if ((${#folders[@]} == 0)); then
-        error "No folders found in syncthing configuration."
-        exit 1
-    fi
-    for folder in "${folders[@]}"; do
-        if [[ ! -d $folder ]]; then
-            warning "Folder from syncthing config does not exist, skipping: %s" "$folder"
-            continue
-        fi
-        folder=$(realpath "$folder")
-        msg "Scanning folder: %s" "$folder"
-        process_conflicts "$folder"
     done
-else
-    process_conflicts "$DIRECTORY"
-fi
 
-exit 0
+    # Check if messages are to be printed using color.
+    unset ALL_OFF BLUE GREEN RED YELLOW
+    if [[ -t 2 && $USE_COLOR = "y" ]]; then
+        # Prefer terminal safe colored and bold text when 'tput' is supported.
+        if tput setaf 0 &>/dev/null; then
+            ALL_OFF="$(tput sgr0)"
+            BLUE="$(tput setaf 27)"
+            GREEN="$(tput setaf 2)"
+            RED="$(tput setaf 1)"
+            YELLOW="$(tput setaf 3)"
+        else
+            ALL_OFF="\\e[1;0m"
+            BLUE="\\e[1;34m"
+            GREEN="\\e[1;32m"
+            RED="\\e[1;31m"
+            YELLOW="\\e[1;33m"
+        fi
+    fi
+    readonly ALL_OFF BLUE GREEN RED YELLOW
+
+    if ((USE_SYNCTHING_CONFIG)) && [[ -n $DIRECTORY ]]; then
+        error "Options -c and -d are mutually exclusive."
+        exit 1
+    fi
+
+    # Check for 'locate' or 'fd'. 'find' should always be there.
+    if [[ $findprog = locate ]]; then
+        if [ -z "$(command -v locate)" ]; then
+            error "Cannot find the 'locate' binary required for finding conflicts."
+            msg "You may want to use find or fd."
+            echo
+            usage
+            exit 1
+        fi
+    elif [[ $findprog = fd ]]; then
+        if [ -z "$(command -v fd)" ]; then
+            error "Cannot find the 'fd' binary required for finding conflicts."
+            msg "You may want to use locate or find."
+            echo
+            usage
+            exit 1
+        fi
+    fi
+
+    # Check for '$diffprog'.
+    if [ -z "$(command -v "${diffprog%% *}")" ] && ((!OUTPUTONLY)); then
+        error "Cannot find the '$diffprog' binary required for viewing differences."
+        exit 1
+    fi
+
+    if ((USE_SYNCTHING_CONFIG)); then
+        config_file=$(find_syncthing_config) || {
+            error "Could not find a valid syncthing configuration file."
+            msg "Set \$STCONFDIR or \$STHOMEDIR to point to your syncthing configuration directory."
+            exit 1
+        }
+        folders=()
+        while IFS= read -r folder; do
+            folders+=("$folder")
+        done < <(get_syncthing_folders "$config_file")
+        if ((${#folders[@]} == 0)); then
+            error "No folders found in syncthing configuration."
+            exit 1
+        fi
+        for folder in "${folders[@]}"; do
+            if [[ ! -d $folder ]]; then
+                warning "Folder from syncthing config does not exist, skipping: %s" "$folder"
+                continue
+            fi
+            folder=$(realpath "$folder")
+            msg "Scanning folder: %s" "$folder"
+            process_conflicts "$folder"
+        done
+    else
+        process_conflicts "$DIRECTORY"
+    fi
+
+    exit 0
+
+fi
