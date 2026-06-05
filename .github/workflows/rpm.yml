@@ -1,0 +1,76 @@
+name: RPM
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-obs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read and validate version
+        id: version
+        run: |
+          VERSION=$(cat VERSION)
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "Tag ($TAG) does not match VERSION file ($VERSION)" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create tarball
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PKGDIR="syncthing-resolve-conflicts-${VERSION}"
+          mkdir "$PKGDIR"
+          cp syncthing-resolve-conflicts README.md LICENSE CHANGELOG.md VERSION "$PKGDIR/"
+          # Inject the canonical version into the packaged script.
+          sed -i "s/^declare -r myver=.*/declare -r myver='${VERSION}'/" \
+            "$PKGDIR/syncthing-resolve-conflicts"
+          tar czf "${PKGDIR}.tar.gz" "$PKGDIR"
+
+      - name: Install osc
+        run: sudo apt-get update && sudo apt-get install -y osc
+
+      - name: Configure osc
+        env:
+          OBS_USERNAME: ${{ secrets.OBS_USERNAME }}
+          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
+        run: |
+          mkdir -p ~/.config/osc
+          cat > ~/.config/osc/oscrc << EOF
+          [general]
+          apiurl = https://api.opensuse.org
+
+          [https://api.opensuse.org]
+          user = ${OBS_USERNAME}
+          pass = ${OBS_PASSWORD}
+          EOF
+
+      - name: Push to OBS
+        env:
+          OBS_PROJECT: ${{ secrets.OBS_PROJECT }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PKG="syncthing-resolve-conflicts"
+          TARBALL="${PKG}-${VERSION}.tar.gz"
+
+          # The OBS package must already exist; create it once via the web UI
+          # or with: osc mkpac "${OBS_PROJECT}/${PKG}"
+          osc checkout "${OBS_PROJECT}/${PKG}"
+          cd "${OBS_PROJECT}/${PKG}"
+
+          # Replace old tarball with the new one.
+          rm -f syncthing-resolve-conflicts-*.tar.gz
+          cp "../../${TARBALL}" .
+
+          # Update spec file, stamping in the new version.
+          cp "../../packaging/${PKG}.spec" "${PKG}.spec"
+          sed -i "s/^Version:.*/Version:        ${VERSION}/" "${PKG}.spec"
+
+          osc addremove
+          osc commit -m "Release ${VERSION}"
