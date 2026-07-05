@@ -218,9 +218,13 @@ process_conflicts() {
         fi
 
         # XXX: Maybe somebody wants to diff special non-text files?
+        case "$(uname -s)" in
+        Darwin) mime_flag=-I ;;
+        *) mime_flag=-i ;;
+        esac
 
         # Ignore binary files.
-        if file -i "$conflict" | grep -qv text; then
+        if ! file -b"$mime_flag" "$conflict" | grep -q '^text/'; then
             nontext+=("$conflict")
             continue
         fi
