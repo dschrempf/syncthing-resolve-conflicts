@@ -224,7 +224,7 @@ process_conflicts() {
         esac
 
         # Ignore binary files.
-        if ! file -b"$mime_flag" "$conflict" | grep -q '^text/'; then
+        if ! file -b "$mime_flag" "$conflict" | grep -q '^text/'; then
             nontext+=("$conflict")
             continue
         fi
